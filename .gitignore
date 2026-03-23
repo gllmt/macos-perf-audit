@@ -1,0 +1,16 @@
+# Generated performance audit reports
+perf-report-*.json
+perf-report.json
+
+# macOS filesystem metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Editor temporary files
+*.swp
+*.swo
+*~
