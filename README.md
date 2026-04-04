@@ -2,6 +2,11 @@
 
 Lightweight audit script for short-lived macOS slowdowns on Apple Silicon Macs.
 
+## Repository Layout
+
+- `macos-perf-audit.sh`: collect a short performance trace and generate a JSON report
+- `trim-background-processes.sh`: stop optional third-party helpers and reduce background activity before an audit
+
 ## What It Collects
 
 - Global CPU usage from `top`
@@ -15,6 +20,7 @@ Lightweight audit script for short-lived macOS slowdowns on Apple Silicon Macs.
 
 ```bash
 chmod +x ./macos-perf-audit.sh
+chmod +x ./trim-background-processes.sh
 ./macos-perf-audit.sh
 sudo ./macos-perf-audit.sh --duration 120 --interval 5 --output perf-report.json
 ```
@@ -25,6 +31,49 @@ Useful variants:
 ./macos-perf-audit.sh --duration 60 --interval 3 --output perf-report.json
 sudo ./macos-perf-audit.sh
 ```
+
+## Reduce Background Load Before an Audit
+
+Use the helper script when you want a cleaner baseline before running the audit.
+
+Default targets:
+
+- AdGuard
+- LogiOptionsPlus
+- Figma
+
+Optional targets:
+
+- BetterDisplay
+- Spotlight indexing
+
+Preview what it would do:
+
+```bash
+./trim-background-processes.sh --dry-run --spotlight --extras
+```
+
+Recommended "lowest-noise" baseline:
+
+```bash
+sudo ./trim-background-processes.sh --spotlight --extras
+sudo ./macos-perf-audit.sh --duration 120 --interval 5
+```
+
+To check what is still running after cleanup:
+
+```bash
+./trim-background-processes.sh --status
+ps -axo pid,pcpu,pmem,rss,args | rg -i 'logi|adguard|figma|betterdisplay|spotlight|corespotlight|mds|mdworker'
+```
+
+To re-enable Spotlight indexing later:
+
+```bash
+sudo ./trim-background-processes.sh --spotlight-on
+```
+
+For a more detailed cleanup workflow, see [LOAD_REDUCTION.md](./LOAD_REDUCTION.md).
 
 ## Output
 
